@@ -1,0 +1,968 @@
+@import "tailwindcss";
+
+/* ============================================
+   DESIGN SYSTEM — Tawjihi Path
+   Dark-mode-first · Arabic RTL · Cairo font
+   ============================================ */
+
+/* Custom theme tokens */
+@theme {
+  --color-primary: #6366f1;
+  --color-primary-light: #818cf8;
+  --color-primary-dark: #4f46e5;
+  --color-accent: #22d3ee;
+  --color-accent-light: #67e8f9;
+  --color-surface: #0f172a;
+  --color-surface-elevated: #1e293b;
+  --color-surface-card: #1e293b;
+  --color-surface-input: #334155;
+  --color-border-subtle: #334155;
+  --color-border-focus: #6366f1;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-danger-soft: rgba(239, 68, 68, 0.15);
+}
+
+/* Base resets & defaults */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode overrides */
+.light body,
+html:not(.dark) body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+
+
+/* ============================================
+   INPUT STYLES
+   ============================================ */
+
+.auth-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  padding-right: 2.75rem; /* space for icon in RTL */
+  background: rgba(51, 65, 85, 0.5);
+  border: 1.5px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.875rem;
+  color: var(--color-text-primary);
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9375rem;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.auth-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.auth-input:focus {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background: rgba(51, 65, 85, 0.7);
+}
+
+.auth-input:hover:not(:focus) {
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.875rem;
+  color: var(--color-text-primary);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(148, 163, 184, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.btn-google:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.875rem;
+  color: var(--color-text-primary);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(148, 163, 184, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.2), transparent);
+}
+
+.auth-divider span {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   ERROR ALERT
+   ============================================ */
+
+.auth-error {
+  padding: 0.875rem 1rem;
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 0.875rem;
+  color: #fca5a5;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  animation: shakeIn 0.4s ease;
+}
+
+@keyframes shakeIn {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+
+.auth-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgba(148, 163, 184, 0.15);
+  border-top-color: var(--color-primary-light);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   PAGE ENTRANCE ANIMATION
+   ============================================ */
+
+.auth-fade-in {
+  animation: fadeSlideUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered children animation */
+.auth-stagger > * {
+  opacity: 0;
+  animation: fadeSlideUp 0.5s ease-out forwards;
+}
+
+.auth-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.auth-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.auth-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.auth-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.auth-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.auth-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.auth-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.auth-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+.auth-stagger > *:nth-child(9) { animation-delay: 0.45s; }
+
+/* ============================================
+   LOGO PULSE
+   ============================================ */
+
+.logo-glow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-glow::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+/* ============================================
+   FORM LABEL
+   ============================================ */
+
+.auth-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   LINK STYLES
+   ============================================ */
+
+.auth-link {
+  color: var(--color-primary-light);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: var(--color-accent-light);
+  text-decoration: underline;
+}
+
+/* ============================================
+   INPUT GROUP (icon + input)
+   ============================================ */
+
+.input-group {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: 0.875rem;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  transition: color 0.25s ease;
+}
+
+
+/* ============================================
+   AUTH PAGES — NEW STYLE (Stage 7)
+   Replace all old .auth-bg, .auth-orb, .glass-card blocks
+   with these. Keep all other CSS below unchanged.
+   ============================================ */
+
+/* ── Page wrapper ── */
+.auth-page-wrap {
+  min-height: 100vh;
+  min-height: 100dvh; /* fixes mobile browsers with address bar */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll; /* NOT fixed — fixed breaks on iOS Safari */
+  position: relative;
+}
+@media (max-width: 640px) {
+  .auth-page-wrap {
+    background-position: 35% center;
+    /* shifts the image slightly right so the brain
+       (left side) peeks out more on narrow screens */
+  }
+}
+
+/* ── Dark overlay on top of sign_bg.png ── */
+.auth-page-overlay {
+  position: absolute; /* change from fixed to absolute */
+  inset: 0;
+  background: rgba(2, 5, 20, 0.60); /* slightly darker for small screens */
+  z-index: 0;
+  pointer-events: none;
+  min-height: 100%;
+}
+
+/* ── Card with neon border (cyan top-left → purple bottom-right) ── */
+.auth-card {
+  background: rgba(4, 9, 22, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 1.25rem;
+  padding: 2rem 1.75rem;
+  /* gradient border trick */
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.55),       /* cyan rim */
+    -4px 0  20px rgba(6, 182, 212, 0.25),    /* cyan left glow */
+    0  -4px 20px rgba(6, 182, 212, 0.25),    /* cyan top glow */
+    4px  0  25px rgba(168, 85, 247, 0.35),   /* purple right glow */
+    0   4px 35px rgba(168, 85, 247, 0.40),   /* purple bottom glow */
+    0  20px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Logo circle ── */
+.auth-logo-circle {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 2px solid rgba(6, 182, 212, 0.7);
+  background: #050B1A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+  flex-shrink: 0;
+}
+
+/* ── Inner title dot-dash ── */
+.auth-title-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 0;
+}
+.auth-title-dot::before,
+.auth-title-dot::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 2.5rem;
+  background: rgba(6, 182, 212, 0.35);
+}
+.auth-title-dot::before { margin-right: 0; }
+.auth-title-dot::after  { margin-left: 0; }
+
+/* Render as: ——●—— */
+.auth-title-dot {
+  position: relative;
+}
+.auth-title-dot::before {
+  content: '';
+  display: inline-block;
+  width: 2.5rem;
+  height: 1px;
+  background: rgba(6,182,212,0.35);
+  vertical-align: middle;
+}
+.auth-title-dot::after {
+  content: '';
+  display: inline-block;
+  width: 2.5rem;
+  height: 1px;
+  background: rgba(6,182,212,0.35);
+  vertical-align: middle;
+}
+
+/* The dot in the middle — we use a wrapper div approach in JSX instead */
+/* In JSX: <div className="auth-title-dot-wrap"><span/></div> */
+/* Simpler: just style it in one line */
+
+/* ── Input field ── */
+.auth-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-field-icon {
+  position: absolute;
+  /* RTL: icon on the right side */
+  right: 0.875rem;
+  color: #a78bfa; /* violet-400 */
+  pointer-events: none;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* LTR: icon on left */
+[dir="ltr"] .auth-field-icon {
+  left: 0.875rem;
+  right: auto;
+}
+
+.auth-field-input {
+  width: 100%;
+  padding: 0.8rem 2.75rem 0.8rem 1rem; /* RTL: right padding for icon */
+  background: rgba(6, 10, 28, 0.8);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 0.75rem;
+  color: #e2e8f0;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[dir="ltr"] .auth-field-input {
+  padding: 0.8rem 1rem 0.8rem 2.75rem; /* LTR: left padding for icon */
+}
+
+.auth-field-input::placeholder {
+  color: rgba(148, 163, 184, 0.55);
+  text-align: right;
+}
+
+[dir="ltr"] .auth-field-input::placeholder {
+  text-align: left;
+}
+
+.auth-field-input:focus {
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+}
+
+/* Password field has eye button on the opposite side */
+.auth-field-input-pwd {
+  padding-left: 2.75rem; /* RTL: left side for eye btn */
+}
+
+[dir="ltr"] .auth-field-input-pwd {
+  padding-right: 2.75rem;
+  padding-left: 2.75rem;
+}
+
+/* ── Eye toggle button ── */
+.auth-eye-btn {
+  position: absolute;
+  left: 0.875rem;  /* RTL: left side */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+[dir="ltr"] .auth-eye-btn {
+  right: 0.875rem;
+  left: auto;
+}
+
+.auth-eye-btn:hover { opacity: 1; }
+
+/* ── CTA gradient button ── */
+.auth-cta-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(90deg, #06b6d4 0%, #8b5cf6 55%, #c026d3 100%);
+  border: none;
+  border-radius: 9999px;
+  color: white;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3), 0 4px 20px rgba(139, 92, 246, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-cta-btn:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.auth-cta-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-cta-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-cta-btn .auth-cta-arrow {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ── Google button ── */
+.auth-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 1.25rem;
+  background: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  color: #1a1a2e;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.auth-google-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+.auth-google-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Divider (OR / أو) ── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.auth-divider span {
+  color: rgba(148, 163, 184, 0.55);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Switch link (Sign In / Sign Up link at bottom) ── */
+.auth-switch-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #06b6d4;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-decoration: none;
+  margin-top: 0.25rem;
+  transition: color 0.2s;
+}
+
+.auth-switch-link:hover {
+  color: #22d3ee;
+  text-decoration: underline;
+}
+
+/* ── Checkbox ── */
+.auth-checkbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 0.25rem;
+  border: 1.5px solid rgba(6, 182, 212, 0.5);
+  background: rgba(6, 10, 28, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.auth-checkbox-checked {
+  background: rgba(6, 182, 212, 0.85);
+  border-color: #06b6d4;
+}
+
+/* ── Error ── */
+.auth-error {
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 0.75rem;
+  color: #fca5a5;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  animation: shakeIn 0.4s ease;
+}
+
+/* ── Page entrance animation ── */
+.auth-fade-in {
+  animation: fadeSlideUp 0.55s ease-out forwards;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shakeIn {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-5px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(3px); }
+}
+
+/* ============================================================
+   REMOVE / OVERRIDE OLD AUTH STYLES
+   Add this block to neutralize the old classes so nothing
+   conflicts. Antigravity: DELETE the old .auth-bg, .auth-orb,
+   .auth-orb-1/2/3, .glass-card blocks from index.css entirely.
+   ============================================================ */
+.auth-bg, .auth-orb, .auth-orb-1, .auth-orb-2, .auth-orb-3 {
+  display: none !important;
+}
+
+/* ============================================
+   PRINT MEDIA RULES — Results PDF Exports
+   ============================================ */
+
+@media print {
+  /* Hide everything except the report */
+  nav, header, footer,
+  .no-print,
+  .btn-primary,
+  .btn-google,
+  .btn-secondary {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Force page breaks to work properly */
+  .glass-card {
+    break-inside: avoid;
+    border: 1px solid #ddd !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ============================================
+   SHINY CTA BUTTON
+   ============================================ */
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --gradient-angle-offset {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --gradient-percent {
+  syntax: "<percentage>";
+  initial-value: 5%;
+  inherits: false;
+}
+@property --gradient-shine {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: false;
+}
+
+.shiny-cta {
+  --shiny-cta-bg: #000510;
+  --shiny-cta-bg-subtle: #0a1929;
+  --shiny-cta-fg: #ffffff;
+  --shiny-cta-highlight: #00e5ff;
+  --shiny-cta-highlight-subtle: #67e8f9;
+  --animation: gradient-angle linear infinite;
+  --duration: 3s;
+  --shadow-size: 2px;
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  outline-offset: 4px;
+  padding: 0.75rem 2rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  border-radius: 360px;
+  color: var(--shiny-cta-fg);
+  background:
+    linear-gradient(var(--shiny-cta-bg), var(--shiny-cta-bg)) padding-box,
+    conic-gradient(
+        from calc(var(--gradient-angle) - var(--gradient-angle-offset)),
+        transparent,
+        var(--shiny-cta-highlight) var(--gradient-percent),
+        var(--gradient-shine) calc(var(--gradient-percent) * 2),
+        var(--shiny-cta-highlight) calc(var(--gradient-percent) * 3),
+        transparent calc(var(--gradient-percent) * 4)
+      )
+      border-box;
+  box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
+  transition: 800ms cubic-bezier(0.25, 1, 0.5, 1);
+  transition-property: --gradient-angle-offset, --gradient-percent, --gradient-shine;
+}
+
+.shiny-cta::before,
+.shiny-cta::after,
+.shiny-cta span::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+}
+
+.shiny-cta::before {
+  --size: calc(100% - var(--shadow-size) * 3);
+  --position: 2px;
+  --space: calc(var(--position) * 2);
+  width: var(--size);
+  height: var(--size);
+  background: radial-gradient(
+      circle at var(--position) var(--position),
+      white calc(var(--position) / 4),
+      transparent 0
+    )
+    padding-box;
+  background-size: var(--space) var(--space);
+  background-repeat: space;
+  mask-image: conic-gradient(
+    from calc(var(--gradient-angle) + 45deg),
+    black,
+    transparent 10% 90%,
+    black
+  );
+  border-radius: inherit;
+  opacity: 0.4;
+  z-index: -1;
+}
+
+.shiny-cta::after {
+  --animation: shimmer linear infinite;
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(-50deg, transparent, var(--shiny-cta-highlight), transparent);
+  mask-image: radial-gradient(circle at bottom, transparent 40%, black);
+  opacity: 0.6;
+}
+
+.shiny-cta span {
+  z-index: 1;
+}
+
+.shiny-cta span::before {
+  --size: calc(100% + 1rem);
+  width: var(--size);
+  height: var(--size);
+  box-shadow: inset 0 -1ex 2rem 4px var(--shiny-cta-highlight);
+  opacity: 0;
+  transition: opacity 800ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.shiny-cta,
+.shiny-cta::before,
+.shiny-cta::after {
+  animation:
+    var(--animation) var(--duration),
+    var(--animation) calc(var(--duration) / 0.4) reverse paused;
+  animation-composition: add;
+}
+
+.shiny-cta span::before {
+  animation: calc(var(--duration) * 1.5) breathe linear infinite;
+}
+
+.shiny-cta:is(:hover, :focus-visible) {
+  --gradient-percent: 20%;
+  --gradient-angle-offset: 95deg;
+  --gradient-shine: var(--shiny-cta-highlight-subtle);
+}
+
+.shiny-cta:is(:hover, :focus-visible),
+.shiny-cta:is(:hover, :focus-visible)::before,
+.shiny-cta:is(:hover, :focus-visible)::after {
+  animation-play-state: running;
+}
+
+.shiny-cta:is(:hover, :focus-visible) span::before {
+  opacity: 1;
+}
+
+.shiny-cta:active {
+  translate: 0 1px;
+}
+
+@keyframes gradient-angle {
+  to { --gradient-angle: 360deg; }
+}
+
+@keyframes shimmer {
+  to { rotate: 360deg; }
+}
+
+@keyframes breathe {
+  from, to { scale: 1; }
+  50% { scale: 1.2; }
+}
+
+/* Glowing Box Container */
+.glow-box {
+  background: rgba(5, 11, 20, 0.75);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.05),
+    0 0 40px rgba(0, 229, 255, 0.06),
+    inset 0 0 40px rgba(0, 229, 255, 0.03);
+  backdrop-filter: blur(12px);
+}
+

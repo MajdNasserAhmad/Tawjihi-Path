@@ -1,0 +1,1181 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Trophy, BookOpen, GraduationCap, Share2, Download, RefreshCw,
+  ChevronDown, ChevronUp, Sparkles, MessageSquare, TrendingUp, UserCircle,
+  AlertCircle, Loader2, X, Briefcase, ChevronRight, ChevronLeft,
+  Scale, Globe, Mic, Users, Bell, Bot, Star, MapPin, DollarSign,
+  ArrowUpRight, CheckCircle, Circle
+} from 'lucide-react';
+import {
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer,
+  Tooltip
+} from 'recharts';
+import { useAssessmentStore } from '../../stores/assessmentStore';
+import { supabase } from '../../lib/supabase';
+import { useCountUp } from '../../hooks/useCountUp';
+import type { FieldId } from '../../types';
+
+// ─── Static Data ──────────────────────────────────────────────────────────────
+
+const fieldData: Record<FieldId, { name: string; gradient: string; description: string; majors: string[]; mandatory_subjects: string[]; icon: React.ReactNode; color: string }> = {
+  health: {
+    name: 'الحقل الصحي',
+    gradient: 'from-emerald-500 to-teal-400',
+    color: '#10b981',
+    icon: <Users className="w-6 h-6" />,
+    description: 'يختص بالعلوم الطبية والصحية والبحث العلمي الحيوي.',
+    mandatory_subjects: ['الكيمياء', 'العلوم الحياتية', 'اللغة الإنجليزية المتقدمة'],
+    majors: [
+      'الطب البشري', 'طب الأسنان', 'الصيدلة', 'التمريض', 'المختبرات الطبية',
+      'العلاج الطبيعي', 'التغذية وعلم الأغذية', 'الصحة العامة', 'التخدير وغرف العمليات',
+      'الأشعة والتصوير الطبي', 'القبالة وصحة الأم', 'الطب البيطري',
+      'الصيدلة الإكلينيكية', 'إدارة المستشفيات', 'علم الأحياء الدقيقة والمناعة',
+    ]
+  },
+  engineering_tech: {
+    name: 'حقل العلوم والتكنولوجيا والهندسة',
+    gradient: 'from-blue-500 to-cyan-400',
+    color: '#3b82f6',
+    icon: <Briefcase className="w-6 h-6" />,
+    description: 'يجمع بين التفكير الرياضي والهندسي والمهارات الرقمية المتقدمة.',
+    mandatory_subjects: ['الرياضيات المتقدمة', 'الفيزياء', 'اللغة الإنجليزية المتقدمة'],
+    majors: [
+      'هندسة الحاسوب', 'الذكاء الاصطناعي وتعلم الآلة', 'الهندسة المدنية', 'علم البيانات',
+      'العمارة والتصميم العمراني', 'الهندسة الكهربائية', 'هندسة الاتصالات',
+      'هندسة الميكاترونيكس', 'هندسة الطاقة المتجددة', 'أمن المعلومات والشبكات',
+      'هندسة الطيران', 'هندسة البيئة والمياه', 'الهندسة الصناعية',
+      'تكنولوجيا المعلومات', 'هندسة البيوطبي',
+    ]
+  },
+  business: {
+    name: 'حقل الأعمال والإدارة',
+    gradient: 'from-amber-500 to-orange-400',
+    color: '#f59e0b',
+    icon: <Briefcase className="w-6 h-6" />,
+    description: 'يركز على مهارات القيادة والتحليل المالي والإدارة الممنهجة.',
+    mandatory_subjects: ['رياضيات الأعمال', 'الثقافة المالية', 'اللغة الإنجليزية المتقدمة'],
+    majors: [
+      'إدارة الأعمال', 'المحاسبة والمراجعة', 'التسويق الرقمي', 'التمويل والمصارف',
+      'سلاسل التوريد واللوجستيات', 'ريادة الأعمال والابتكار', 'إدارة الفنادق والسياحة',
+      'اقتصاديات الأعمال', 'إدارة الموارد البشرية', 'التجارة الإلكترونية',
+      'إدارة المشاريع', 'المحاسبة الإسلامية والمصرفية', 'تحليل الأعمال والبيانات',
+      'العلاقات العامة والإعلام المؤسسي', 'إدارة المبيعات والتوزيع',
+    ]
+  },
+  law_sharia_languages: {
+    name: 'العلوم الإنسانية والاجتماعية',
+    gradient: 'from-purple-500 to-pink-400',
+    color: '#a855f7',
+    icon: <Scale className="w-6 h-6" />,
+    description: 'يستهدف المهارات اللغوية والإنسانية والوعي القانوني والاجتماعي.',
+    mandatory_subjects: ['اللغة العربية (تخصص)', 'اللغة الإنجليزية المتقدمة', 'التربية الإسلامية (تخصص)'],
+    majors: [
+      'القانون العام', 'القانون التجاري', 'الشريعة الإسلامية', 'الشريعة والقانون',
+      'اللغة الإنجليزية وآدابها', 'الترجمة والتعريب', 'الإعلام والاتصال',
+      'العلوم السياسية والعلاقات الدولية', 'التربية وعلم النفس', 'الدراسات الإسلامية',
+      'الإرشاد النفسي والتربوي', 'اللغة العربية وآدابها', 'الخدمة الاجتماعية',
+      'علم الاجتماع والأنثروبولوجيا', 'الإعلام الرقمي والصحافة الإلكترونية',
+    ]
+  }
+};
+
+const riasecLabels: Record<string, string> = {
+  R: 'واقعي', I: 'استقصائي', A: 'فني', S: 'اجتماعي', E: 'مبادر', C: 'تقليدي'
+};
+const bigFiveLabels: Record<string, string> = {
+  O: 'الانفتاح', C: 'الضمير', E: 'الانبساط', A: 'القبول', N: 'العصبية'
+};
+const electiveKeys: Record<string, string> = {
+  math: 'الرياضيات', physics: 'الفيزياء', chemistry: 'الكيمياء',
+  biology: 'الأحياء', earth_sciences: 'علوم الأرض',
+  history: 'التاريخ', geography: 'الجغرافيا',
+  digital_skills: 'المهارات الرقمية', management: 'الإدارة',
+  vocational_digital: 'التربية المهنية والرقمية'
+};
+
+// RIASEC to personality trait mapping
+const riasecTraits: Record<string, { icon: string; text: string }[]> = {
+  S: [
+    { icon: '💬', text: 'تتمتع بمهارات تواصل قوية' },
+    { icon: '❤️', text: 'لديك حس عالٍ بالتعاطف والمسؤولية' },
+    { icon: '🔍', text: 'تميل إلى فهم الناس وحل مشكلاتهم' },
+    { icon: '👥', text: 'تنجذب للأعمال التي تخدم المجتمع' },
+  ],
+  I: [
+    { icon: '🔬', text: 'تحب البحث والتحليل العميق' },
+    { icon: '🧠', text: 'تتميز بالتفكير المنطقي والناقد' },
+    { icon: '📊', text: 'تميل إلى حل المشكلات المعقدة' },
+    { icon: '🎯', text: 'تسعى لفهم الأنماط والعلاقات' },
+  ],
+  A: [
+    { icon: '🎨', text: 'تمتلك روحاً إبداعية متميزة' },
+    { icon: '✨', text: 'تعبر عن أفكارك بطرق مبتكرة' },
+    { icon: '🖌️', text: 'تميل إلى التفكير خارج الصندوق' },
+    { icon: '💡', text: 'لديك حساسية جمالية عالية' },
+  ],
+  E: [
+    { icon: '🚀', text: 'تتمتع بروح قيادية طموحة' },
+    { icon: '💼', text: 'تبرع في الإقناع وبناء الشراكات' },
+    { icon: '🌟', text: 'تسعى للتأثير وصنع القرار' },
+    { icon: '🤝', text: 'تنجذب للأدوار ذات المسؤولية' },
+  ],
+  R: [
+    { icon: '🔧', text: 'تميل للعمل الملموس والعملي' },
+    { icon: '⚙️', text: 'تحب التعامل مع الأنظمة والآلات' },
+    { icon: '📐', text: 'تتقن الدقة والتفاصيل التقنية' },
+    { icon: '🏗️', text: 'تفضل نتائج واضحة وملموسة' },
+  ],
+  C: [
+    { icon: '📋', text: 'تحب التنظيم والتخطيط المنهجي' },
+    { icon: '✅', text: 'دقيق ومنضبط في عملك' },
+    { icon: '📁', text: 'تتميز بإدارة الوقت والموارد' },
+    { icon: '🎯', text: 'تسعى للدقة والجودة الشاملة' },
+  ],
+};
+
+const SALARY_MAP: Record<string, { range: string; growth: 'مرتفع' | 'متوسط' }> = {
+  'محامٍ / محامية': { range: '8K - 20K+', growth: 'مرتفع' },
+  'مستشار تربوي': { range: '6K - 14K', growth: 'مرتفع' },
+  'أخصائي موارد بشرية': { range: '5K - 12K', growth: 'مرتفع' },
+  'دبلوماسي': { range: '10K - 25K+', growth: 'مرتفع' },
+  'صحفي / إعلامي': { range: '4K - 10K', growth: 'متوسط' },
+  'مترجم معتمد': { range: '5K - 14K', growth: 'متوسط' },
+  'طبيب / طبيبة': { range: '12K - 35K+', growth: 'مرتفع' },
+  'صيدلاني / صيدلانية': { range: '8K - 18K', growth: 'مرتفع' },
+  'ممرض / ممرضة متخصص': { range: '6K - 14K', growth: 'مرتفع' },
+  'مهندس برمجيات': { range: '8K - 25K+', growth: 'مرتفع' },
+  'مهندس مدني': { range: '7K - 18K', growth: 'مرتفع' },
+  'محلل بيانات وذكاء اصطناعي': { range: '9K - 22K', growth: 'مرتفع' },
+  'مدير أعمال': { range: '8K - 20K', growth: 'مرتفع' },
+  'محاسب قانوني': { range: '5K - 14K', growth: 'متوسط' },
+  'مختص تسويق رقمي': { range: '5K - 13K', growth: 'مرتفع' },
+};
+
+
+
+// Static front-end fallback
+const CAREERS_FALLBACK: Record<string, { jobs: string[]; majors: string[] }> = {
+  health: {
+    jobs: ['طبيب / طبيبة', 'صيدلاني / صيدلانية', 'ممرض / ممرضة متخصص'],
+    majors: ['الطب البشري', 'طب الأسنان', 'الصيدلة'],
+  },
+  engineering_tech: {
+    jobs: ['مهندس برمجيات', 'مهندس مدني', 'محلل بيانات وذكاء اصطناعي'],
+    majors: ['هندسة الحاسوب', 'الهندسة المدنية', 'علم البيانات والذكاء الاصطناعي'],
+  },
+  business: {
+    jobs: ['مدير أعمال', 'محاسب قانوني', 'مختص تسويق رقمي'],
+    majors: ['إدارة الأعمال', 'المحاسبة', 'التسويق الرقمي'],
+  },
+  law_sharia_languages: {
+    jobs: ['محامٍ / محامية', 'صحفي / إعلامي', 'مترجم معتمد'],
+    majors: ['القانون', 'الإعلام والاتصال', 'اللغة الإنجليزية التطبيقية'],
+  },
+};
+
+const RANK_COLORS = [
+  { bg: 'from-purple-600 to-indigo-600', border: 'border-purple-500/40', badge: '#7c3aed', text: 'text-purple-400' },
+  { bg: 'from-orange-500 to-amber-500',  border: 'border-orange-500/40',  badge: '#f97316', text: 'text-orange-400' },
+  { bg: 'from-teal-500 to-emerald-500',  border: 'border-teal-500/40',   badge: '#14b8a6', text: 'text-teal-400' },
+  { bg: 'from-blue-500 to-cyan-500',     border: 'border-blue-500/40',   badge: '#3b82f6', text: 'text-blue-400' },
+];
+
+const FIELD_ICONS: Record<string, React.ReactNode> = {
+  law_sharia_languages: <Scale className="w-7 h-7" />,
+  business: <Briefcase className="w-7 h-7" />,
+  health: <Users className="w-7 h-7" />,
+  engineering_tech: <Globe className="w-7 h-7" />,
+};
+
+// ─── Score Label ──────────────────────────────────────────────────────────────
+function getScoreLabel(score: number): string {
+  if (score >= 80) return 'مستوى مرتفع جداً';
+  if (score >= 60) return 'مستوى مرتفع';
+  if (score >= 40) return 'مستوى متوسط';
+  return 'مستوى منخفض';
+}
+
+// ─── Star Rating ──────────────────────────────────────────────────────────────
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map(i => (
+        <Star key={i} className={`w-3.5 h-3.5 ${i <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-600'}`} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+export default function Results() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const resetAssessment = useAssessmentStore((state) => state.reset);
+  const reportRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [result, setResult] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedField, setExpandedField] = useState<string | null>(null);
+
+  // Major modal
+  const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
+  const [majorDesc, setMajorDesc] = useState<string | null>(null);
+  const [loadingDesc, setLoadingDesc] = useState(false);
+
+  // Field careers
+  const [fieldCareers, setFieldCareers] = useState<Record<string, { jobs: string[]; majors: string[] }>>({});
+  const [loadingCareers, setLoadingCareers] = useState<string | null>(null);
+
+  // Chatbot
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Score counter using hook
+  // Guard and multiply score by 100 if it is a decimal stored between 0 and 1
+  const rawScore = result?.field_1_score || 0;
+  const topScore = rawScore <= 1 && rawScore > 0 ? Math.round(rawScore * 100) : Math.round(rawScore);
+  const { count: scoreCount, ref: scoreRef } = useCountUp(topScore, 1800, true);
+
+  useEffect(() => {
+    async function fetchResult() {
+      if (!id) return;
+      try {
+        const { data, error: fetchError } = await supabase
+          .from('assessment_results').select('*').eq('id', id).single();
+        if (fetchError) throw fetchError;
+        
+        console.log('DEBUG score:', data.field_1_score, typeof data.field_1_score);
+        
+        const enriched = {
+          ...data,
+          fields_ranked: [
+            { field_id: data.field_1, score: data.field_1_score <= 1 && data.field_1_score > 0 ? data.field_1_score * 100 : data.field_1_score },
+            { field_id: data.field_2, score: data.field_2_score <= 1 && data.field_2_score > 0 ? data.field_2_score * 100 : data.field_2_score },
+            { field_id: data.field_3, score: data.field_3_score <= 1 && data.field_3_score > 0 ? data.field_3_score * 100 : data.field_3_score },
+            { field_id: data.field_4, score: data.field_4_score <= 1 && data.field_4_score > 0 ? data.field_4_score * 100 : data.field_4_score },
+          ].filter(f => f.field_id)
+        };
+        setResult(enriched);
+        setExpandedField(data.field_1 || null);
+        if (data.field_1) {
+          fetchFieldCareers(data.field_1, fieldData[data.field_1 as FieldId]?.name || data.field_1);
+        }
+      } catch (err: any) {
+        setError('تعذر العثور على التقرير المطلوب. يرجى التأكد من الرابط أو إعادة الاختبار.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchResult();
+  }, [id]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages, isTyping]);
+
+  const fetchFieldCareers = async (field_id: string, field_name: string) => {
+    if (fieldCareers[field_id]) return;
+    setLoadingCareers(field_id);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-service', {
+        body: { action: 'field_careers', payload: { field_id, field_name } }
+      });
+      if (error) throw error;
+      if (data?.result) {
+        setFieldCareers(prev => ({ ...prev, [field_id]: data.result }));
+      }
+    } catch (e) {
+      setFieldCareers(prev => ({
+        ...prev,
+        [field_id]: CAREERS_FALLBACK[field_id] || { jobs: [], majors: [] }
+      }));
+    } finally {
+      setLoadingCareers(null);
+    }
+  };
+
+  const handleFieldExpand = (field_id: string) => {
+    const isExpanding = expandedField !== field_id;
+    setExpandedField(isExpanding ? field_id : null);
+    if (isExpanding) {
+      const details = fieldData[field_id as FieldId];
+      if (details) fetchFieldCareers(field_id, details.name);
+    }
+  };
+
+  const handleMajorClick = async (major: string) => {
+    setSelectedMajor(major);
+    setMajorDesc(null);
+    setLoadingDesc(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-service', {
+        body: { action: 'major_description', payload: { major_name: major } }
+      });
+      if (error) throw error;
+      setMajorDesc(data.result);
+    } catch {
+      setMajorDesc('عذراً، تعذر جلب وصف التخصص حالياً.');
+    } finally {
+      setLoadingDesc(false);
+    }
+  };
+
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!chatInput.trim() || isTyping || !result) return;
+    const userMsg = chatInput.trim();
+    setChatInput('');
+    setChatMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    setIsTyping(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-service', {
+        body: { action: 'chatbot', payload: { message: userMsg, context: result, history: chatMessages.slice(-5) } }
+      });
+      if (error) throw error;
+      setChatMessages(prev => [...prev, { role: 'assistant', content: data.result }]);
+    } catch {
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'عذراً، واجهت مشكلة. يرجى المحاولة مرة أخرى.' }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/share/${result?.id}`;
+    if (navigator.share) await navigator.share({ title: 'نتائج مساري التوجيهي', url: shareUrl });
+    else { await navigator.clipboard.writeText(shareUrl); alert('تم نسخ الرابط!'); }
+  };
+
+  const scrollCarousel = (ref: React.RefObject<HTMLDivElement>, dir: 'left' | 'right') => {
+    if (!ref.current) return;
+    const amount = 340;
+    ref.current.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
+  if (loading) return (
+    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center font-cairo text-white">
+      <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mb-4" />
+      <p className="text-slate-400 animate-pulse">جاري جلب تقريرك المخصص...</p>
+    </div>
+  );
+
+  if (error || !result) return (
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 font-cairo text-white">
+      <div className="p-8 rounded-2xl border border-red-500/30 bg-red-500/5 text-center max-w-md">
+        <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
+        <h2 className="text-2xl font-bold mb-4">خطأ في استرجاع النتائج</h2>
+        <p className="text-slate-400 mb-8">{error}</p>
+        <button onClick={() => navigate('/assess/grades')} className="btn-primary w-full">إعادة الاختبار</button>
+      </div>
+    </div>
+  );
+
+  // ── Derived data ──
+  const riasecListData = Object.entries({
+    R: result.riasec_r, I: result.riasec_i, A: result.riasec_a,
+    S: result.riasec_s, E: result.riasec_e, C: result.riasec_c,
+  }).map(([key, value]) => ({ key, label: riasecLabels[key], score: value as number }))
+    .sort((a, b) => b.score - a.score);
+
+  const bigFiveRadarData = [
+    { subject: 'الانفتاح',  score: result.big5_openness || 0 },
+    { subject: 'الضمير',    score: result.big5_conscientiousness || 0 },
+    { subject: 'الانبساط',  score: result.big5_extraversion || 0 },
+    { subject: 'القبول',    score: result.big5_agreeableness || 0 },
+    { subject: 'العصبية',  score: result.big5_neuroticism || 0 },
+  ];
+
+  const riasecRadarData = [
+    { subject: 'واقعي',     score: result.riasec_r || 0 },
+    { subject: 'استقصائي', score: result.riasec_i || 0 },
+    { subject: 'فني',       score: result.riasec_a || 0 },
+    { subject: 'اجتماعي',  score: result.riasec_s || 0 },
+    { subject: 'مبادر',    score: result.riasec_e || 0 },
+    { subject: 'تقليدي',   score: result.riasec_c || 0 },
+  ];
+
+  const topRiasecKey = riasecListData[0]?.key || 'S';
+  const personalityBullets = riasecTraits[topRiasecKey] || riasecTraits['S'];
+
+  const topField = result.field_1 as FieldId;
+  const topFieldData = fieldData[topField];
+  const topFieldCareers = fieldCareers[topField] || CAREERS_FALLBACK[topField] || { jobs: [], majors: [] };
+  const universities = UNIVERSITIES_BY_FIELD[topField] || UNIVERSITIES_BY_FIELD['law_sharia_languages'];
+
+  const electiveKeys2: Record<string, string> = electiveKeys;
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-white font-cairo pb-24 overflow-x-hidden" dir="rtl">
+
+      {/* Ambient background blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-purple-600/8 rounded-full blur-[180px]" />
+        <div className="absolute top-[30%] left-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[140px]" />
+        <div className="absolute bottom-0 right-[20%] w-[600px] h-[600px] bg-indigo-600/6 rounded-full blur-[160px]" />
+      </div>
+
+      <div className="relative z-10">
+
+        {/* ═══════════════════════════════════════════════════════════
+            1. HERO SECTION
+        ════════════════════════════════════════════════════════════ */}
+        <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-28 pb-6">
+          <div className="relative w-full max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              {/* Right/Top: success badge and actions */}
+              <div className="flex-1 space-y-6 text-right">
+                <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-2 text-indigo-400 text-sm font-bold">
+                  <Trophy className="w-4 h-4" />
+                  <span>اكتمل التقييم بنجاح</span>
+                </div>
+                
+                <div className="flex flex-wrap gap-3 no-print justify-start">
+                  <button
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-l from-indigo-600 to-purple-600 text-white font-bold text-sm hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg shadow-indigo-500/30"
+                  >
+                    <Download className="w-4 h-4" />
+                    تحميل التقرير
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/15 text-white font-bold text-sm hover:bg-white/10 hover:-translate-y-0.5 transition-all"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    مشاركة النتيجة
+                  </button>
+                  <button
+                    onClick={() => { resetAssessment(); navigate('/assess/grades'); }}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/15 text-slate-300 font-bold text-sm hover:bg-white/10 hover:-translate-y-0.5 transition-all"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    إعادة الاختبار
+                  </button>
+                </div>
+              </div>
+
+              {/* Left/Bottom: Score Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex-shrink-0 w-full max-w-xs"
+              >
+                <div
+                  ref={scoreRef}
+                  className="relative rounded-2xl p-6 text-center"
+                  style={{
+                    background: 'rgba(15, 5, 30, 0.85)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    boxShadow: '0 0 40px rgba(139, 92, 246, 0.15)',
+                  }}
+                >
+                  <div className="absolute top-0 left-0 w-full h-0.5 rounded-t-2xl bg-gradient-to-r from-purple-500 via-cyan-400 to-indigo-500" />
+
+                  <p className="text-slate-400 text-xs font-bold mb-1">نتيجتك العامة</p>
+                  <div className="text-6xl font-black tabular-nums bg-gradient-to-b from-white to-purple-300 bg-clip-text text-transparent leading-none mb-1">
+                    {scoreCount}%
+                  </div>
+                  <p className="text-purple-300 font-bold text-xs mb-4">{getScoreLabel(Math.round(topScore))}</p>
+
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round(topScore)}%` }}
+                      transition={{ duration: 1.8, ease: 'easeOut', delay: 0.5 }}
+                      className="h-full rounded-full bg-gradient-to-r from-purple-500 to-cyan-400"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => document.getElementById('paths-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="w-full py-2 rounded-xl text-xs font-bold text-purple-300 border border-purple-500/25 bg-purple-500/10 hover:bg-purple-500/20 transition-all flex items-center justify-center gap-2"
+                  >
+                    <span>درجة التوافق</span>
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
+
+                  <div className="mt-3 pt-3 border-t border-white/10">
+                    <p className="text-[10px] text-slate-500 mb-0.5">أفضل حقل لك</p>
+                    <p className="text-xs font-bold text-white">{topFieldData?.name}</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <div className="max-w-7xl mx-auto px-4 md:px-8 space-y-16" ref={reportRef}>
+
+          {/* ═══════════════════════════════════════════════════════════
+              2. WHY THIS FIELD (AI narrative moved up)
+          ════════════════════════════════════════════════════════════ */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{
+                background: 'rgba(10, 8, 25, 0.7)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
+            >
+              <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-cyan-400 to-indigo-500" />
+              <div className="p-6 md:p-8">
+                <h2 className="text-xl font-black mb-6 flex items-center gap-3">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                  لماذا {topFieldData?.name}؟
+                </h2>
+                <div className="flex flex-col md:flex-row gap-8">
+                  {/* Left: Narrative */}
+                  <div className="flex-1 flex gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                      <GraduationCap className="w-6 h-6 text-white" />
+                    </div>
+                    <p className="text-slate-300 leading-loose text-base italic flex-1">
+                      {result.ai_narrative_ar || 'بناءً على تحليل شخصيتك وميولك، وجدنا أن هذا الحقل الأكاديمي هو الأنسب لك. يتوافق بشكل كبير مع قدراتك وطموحاتك، ويفتح أمامك آفاقاً واسعة للنجاح.'}
+                    </p>
+                  </div>
+
+                  {/* Right: Trait bullets */}
+                  <div className="flex-shrink-0 w-full md:w-72 space-y-2">
+                    {personalityBullets.map((bullet, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.08 }}
+                        className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/8"
+                      >
+                        <span className="text-lg flex-shrink-0">{bullet.icon}</span>
+                        <span className="text-xs text-slate-300 font-medium">{bullet.text}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* ═══════════════════════════════════════════════════════════
+              3. PERSONALITY CHARTS (Radar)
+          ════════════════════════════════════════════════════════════ */}
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <h2 className="text-2xl font-black whitespace-nowrap">تحليل شخصيتك وميولك المهنية</h2>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/15 to-transparent" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Big Five Radar */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="rounded-2xl p-6"
+                style={{
+                  background: 'rgba(10, 8, 25, 0.7)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
+                  <UserCircle className="w-5 h-5 text-purple-400" />
+                  تحليل السمات الشخصية
+                </h3>
+                <ResponsiveContainer width="100%" height={280}>
+                  <RadarChart data={bigFiveRadarData} cx="50%" cy="50%" outerRadius="75%">
+                    <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                    <PolarAngleAxis
+                      dataKey="subject"
+                      tick={{ fill: '#94a3b8', fontSize: 12, fontFamily: 'Cairo' }}
+                    />
+                    <Radar
+                      name="الشخصية"
+                      dataKey="score"
+                      stroke="#a855f7"
+                      fill="rgba(168, 85, 247, 0.2)"
+                      strokeWidth={2}
+                      dot={{ fill: 'white', r: 4, strokeWidth: 0 }}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: '#0f0820', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 12, fontFamily: 'Cairo' }}
+                      formatter={(val: number) => [`${Math.round(val)}%`, '']}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </motion.div>
+
+              {/* RIASEC Radar */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="rounded-2xl p-6"
+                style={{
+                  background: 'rgba(10, 8, 25, 0.7)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
+                  <TrendingUp className="w-5 h-5 text-cyan-400" />
+                  بصمة ميولك المهنية (RIASEC)
+                </h3>
+                <ResponsiveContainer width="100%" height={280}>
+                  <RadarChart data={riasecRadarData} cx="50%" cy="50%" outerRadius="75%">
+                    <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                    <PolarAngleAxis
+                      dataKey="subject"
+                      tick={{ fill: '#94a3b8', fontSize: 12, fontFamily: 'Cairo' }}
+                    />
+                    <Radar
+                      name="RIASEC"
+                      dataKey="score"
+                      stroke="#22d3ee"
+                      fill="rgba(34, 211, 238, 0.2)"
+                      strokeWidth={2}
+                      dot={{ fill: 'white', r: 4, strokeWidth: 0 }}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: '#050f1a', border: '1px solid rgba(34,211,238,0.3)', borderRadius: 12, fontFamily: 'Cairo' }}
+                      formatter={(val: number) => [`${Math.round(val)}%`, '']}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </motion.div>
+            </div>
+          </motion.section>
+
+          {/* ═══════════════════════════════════════════════════════════
+              4. BEST PATHS — Horizontal Carousel
+          ════════════════════════════════════════════════════════════ */}
+          <motion.section
+            id="paths-section"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <Trophy className="w-6 h-6 text-amber-400 flex-shrink-0" />
+              <h2 className="text-2xl font-black whitespace-nowrap">أفضل المسارات المقترحة لك</h2>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/15 to-transparent" />
+              {/* Arrow buttons */}
+              <div className="flex gap-2 no-print">
+                <button
+                  onClick={() => scrollCarousel(carouselRef, 'right')}
+                  className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/15 transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => scrollCarousel(carouselRef, 'left')}
+                  className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/15 transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div
+              ref={carouselRef}
+              className="flex gap-5 overflow-x-auto pb-4 scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {result.fields_ranked.map((field: any, idx: number) => {
+                const details = fieldData[field.field_id as FieldId];
+                const rank = RANK_COLORS[idx] || RANK_COLORS[0];
+                const careers = fieldCareers[field.field_id] || CAREERS_FALLBACK[field.field_id];
+                // Tag pills from RIASEC top 3
+                const topTraitKeys = riasecListData.slice(0, 3).map(r => r.key);
+                const tagTexts = topTraitKeys.map(k => {
+                  const t = riasecTraits[k]?.[0]?.text || '';
+                  return t.replace('تتمتع بمهارات ', '').replace('لديك حس عالٍ بـ', '').replace('تميل إلى ', '').split(' ').slice(0, 2).join(' ');
+                }).filter(Boolean);
+
+                return (
+                  <motion.div
+                    key={field.field_id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className={`flex-shrink-0 w-72 rounded-2xl p-6 border ${rank.border} flex flex-col gap-4`}
+                    style={{
+                      background: 'rgba(10, 8, 25, 0.8)',
+                      backdropFilter: 'blur(16px)',
+                    }}
+                  >
+                    {/* Rank badge + icon */}
+                    <div className="flex items-start justify-between">
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${rank.bg} flex items-center justify-center text-white font-black text-lg shadow-lg`}>
+                        {idx + 1}
+                      </div>
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${rank.bg} bg-opacity-20 flex items-center justify-center`}
+                        style={{ background: `${rank.badge}22` }}>
+                        <span style={{ color: rank.badge }}>
+                          {FIELD_ICONS[field.field_id] || <BookOpen className="w-6 h-6" />}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Field name */}
+                    <div>
+                      <h3 className="font-black text-lg leading-tight mb-1">{details?.name || field.field_id}</h3>
+                      <p className="text-slate-500 text-xs line-clamp-2">{details?.description}</p>
+                    </div>
+
+                    {/* Score */}
+                    <div>
+                      <span className="text-3xl font-black text-emerald-400">{Math.round(field.score)}%</span>
+                      <span className="text-slate-500 text-xs mr-2">درجة التوافق</span>
+                    </div>
+
+                    {/* Tag pills */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {tagTexts.slice(0, 3).map((tag, ti) => (
+                        <span key={ti} className="text-xs px-2.5 py-1 rounded-full bg-white/8 border border-white/10 text-slate-300">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Button */}
+                    <button
+                      onClick={() => handleFieldExpand(field.field_id)}
+                      className="mt-auto w-full py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 hover:-translate-y-0.5 transition-all"
+                    >
+                      عرض التفاصيل
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Expanded field details (existing logic preserved) */}
+            <AnimatePresence>
+              {expandedField && (
+                <motion.div
+                  key={expandedField}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="mt-6 overflow-hidden"
+                >
+                  {(() => {
+                    const field = result.fields_ranked.find((f: any) => f.field_id === expandedField);
+                    if (!field) return null;
+                    const details = fieldData[field.field_id as FieldId];
+                    const careers = fieldCareers[field.field_id];
+                    const aiMajors = careers?.majors ?? [];
+                    const restMajors = (details?.majors ?? []).filter(m => !aiMajors.includes(m));
+                    const electiveKey = result.recommended_electives?.[field.field_id];
+                    const electiveLabel = electiveKey ? (electiveKeys2[electiveKey as string] || electiveKey) : '-';
+
+                    return (
+                      <div
+                        className="rounded-2xl p-8 border border-white/10"
+                        style={{ background: 'rgba(10, 8, 25, 0.8)', backdropFilter: 'blur(16px)' }}
+                      >
+                        <div className="flex justify-between items-center mb-6">
+                          <h4 className="text-xl font-bold">{details?.name}</h4>
+                          <button
+                            onClick={() => setExpandedField(null)}
+                            className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          {/* Mandatory subjects */}
+                          <div className="space-y-3">
+                            <h5 className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                              <BookOpen className="w-4 h-4" /><span>المواد الوزارية</span>
+                            </h5>
+                            <div className="p-3 rounded-xl bg-white/5 border border-white/8 space-y-2">
+                              {(details?.mandatory_subjects ?? []).map((subject, i) => (
+                                <div key={i} className="flex items-center gap-2 text-sm text-slate-200">
+                                  <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-black flex items-center justify-center">{i + 1}</span>
+                                  {subject}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
+                              <span className="text-xs text-indigo-400 font-bold block mb-1">المادة الاختيارية الموصى بها</span>
+                              <span className="text-lg font-bold">{electiveLabel}</span>
+                            </div>
+                          </div>
+                          {/* Jobs */}
+                          <div className="space-y-3">
+                            <h5 className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                              <Briefcase className="w-4 h-4" /><span>أبرز الوظائف بعد التخرج</span>
+                            </h5>
+                            {loadingCareers === field.field_id ? (
+                              <div className="flex items-center gap-2 text-slate-400 text-sm py-3">
+                                <Loader2 className="w-4 h-4 animate-spin" /><span>جاري التحميل...</span>
+                              </div>
+                            ) : careers?.jobs?.length ? (
+                              <div className="space-y-2">
+                                {careers.jobs.map((job, i) => (
+                                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
+                                    <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-xs font-black flex items-center justify-center">{i + 1}</span>
+                                    <span className="text-sm text-slate-200">{job}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-slate-600 text-sm">جاري جلب البيانات...</p>
+                            )}
+                          </div>
+                          {/* AI majors */}
+                          <div className="space-y-3">
+                            <h5 className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                              <Sparkles className="w-4 h-4" /><span>أفضل 3 تخصصات موصى بها</span>
+                            </h5>
+                            {loadingCareers === field.field_id ? (
+                              <div className="flex items-center gap-2 text-slate-400 text-sm py-3">
+                                <Loader2 className="w-4 h-4 animate-spin" /><span>جاري التحميل...</span>
+                              </div>
+                            ) : aiMajors.length ? (
+                              <div className="space-y-2">
+                                {aiMajors.map((major, i) => (
+                                  <button key={i} type="button"
+                                    onClick={() => handleMajorClick(major)}
+                                    className="w-full flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 hover:bg-emerald-500/15 transition-all text-right group"
+                                  >
+                                    <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-black flex items-center justify-center">{i + 1}</span>
+                                    <span className="text-sm text-slate-200 group-hover:text-white transition-colors flex-1">{major}</span>
+                                    <ChevronRight className="w-3 h-3 text-emerald-500/40 group-hover:text-emerald-400 transition-colors" />
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-slate-600 text-sm">�          {/* ═══════════════════════════════════════════════════════════
+              6. BOTTOM 2-COLUMN
+          ════════════════════════════════════════════════════════════ */}
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 no-print"
+          >
+            {/* Col 1: Next Steps */}
+            <div
+              className="rounded-2xl p-6 border border-white/8"
+              style={{ background: 'rgba(10, 8, 25, 0.7)', backdropFilter: 'blur(12px)' }}
+            >
+              <h3 className="text-lg font-black mb-6 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-indigo-400" />
+                خطواتك القادمة
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { label: 'أكمل إجراءات الاختيار', done: false },
+                  { label: 'تم تحليل شخصيتك', done: true },
+                  { label: 'تم اختيار أفضل المسارات لك', done: true },
+                  { label: 'تعرف على الجامعات والتخصصات', done: false },
+                ].map((step, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black mt-0.5 ${step.done ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/25'}`}>
+                      {step.done ? '✓' : i + 1}
+                    </div>
+                    <span className={`text-sm mt-1 ${step.done ? 'text-emerald-400' : 'text-slate-300'}`}>
+                      {step.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 2: AI Advisor */}
+            <div
+              className="rounded-2xl p-6 relative overflow-hidden flex flex-col"
+              style={{
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.3) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              {/* Glow orb */}
+              <div className="absolute top-0 left-0 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl" />
+              <div className="relative">
+                <h3 className="text-lg font-black mb-2">المستشار الذكي</h3>
+                <p className="text-slate-300 text-sm mb-6 leading-relaxed">
+                  اسأل مستشارك الأكاديمي الرقمي عن أي شيء يتعلق بنتائجك والمسارات المتاحة.
+                </p>
+                {/* Robot illustration */}
+                <div className="flex justify-center mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-4xl shadow-lg">
+                    🤖
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsChatOpen(true)}
+                  className="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 mb-3"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  ابدأ المحادثة
+                </button>
+                <p className="text-center text-xs text-slate-400">⏰ متاح على مدار الساعة</p>
+              </div>
+            </div>
+          </motion.section>assName="mt-auto w-full py-2 rounded-xl text-xs font-bold text-purple-300 border border-purple-500/25 bg-purple-500/8 hover:bg-purple-500/20 transition-all">
+                    عرض التخصصات
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* ═══════════════════════════════════════════════════════════
+              7. BOTTOM 3-COLUMN
+          ════════════════════════════════════════════════════════════ */}
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 no-print"
+          >
+            {/* Col 1: Next Steps */}
+            <div
+              className="rounded-2xl p-6 border border-white/8"
+              style={{ background: 'rgba(10, 8, 25, 0.7)', backdropFilter: 'blur(12px)' }}
+            >
+              <h3 className="text-lg font-black mb-6 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-indigo-400" />
+                خطواتك القادمة
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { label: 'أكمل إجراءات الاختيار', done: false },
+                  { label: 'تم تحليل شخصيتك', done: true },
+                  { label: 'تم اختيار أفضل المسارات لك', done: true },
+                  { label: 'تعرف على الجامعات والتخصصات', done: false },
+                ].map((step, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black mt-0.5 ${step.done ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/25'}`}>
+                      {step.done ? '✓' : i + 1}
+                    </div>
+                    <span className={`text-sm mt-1 ${step.done ? 'text-emerald-400' : 'text-slate-300'}`}>
+                      {step.label}
+                      {step.done && <span className="text-xs mr-1 opacity-60">✅</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 2: AI Advisor */}
+            <div
+              className="rounded-2xl p-6 relative overflow-hidden flex flex-col"
+              style={{
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.3) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              {/* Glow orb */}
+              <div className="absolute top-0 left-0 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl" />
+              <div className="relative">
+                <h3 className="text-lg font-black mb-2">المستشار الذكي</h3>
+                <p className="text-slate-300 text-sm mb-6 leading-relaxed">
+                  اسأل مستشارك الأكاديمي الرقمي عن أي شيء يتعلق بنتائجك والمسارات المتاحة.
+                </p>
+                {/* Robot illustration */}
+                <div className="flex justify-center mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-4xl shadow-lg">
+                    🤖
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsChatOpen(true)}
+                  className="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 mb-3"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  ابدأ المحادثة
+                </button>
+                <p className="text-center text-xs text-slate-400">⏰ متاح على مدار الساعة</p>
+              </div>
+            </div>
+
+            {/* Col 3: Important Reminder */}
+            <div
+              className="rounded-2xl p-6 relative overflow-hidden flex flex-col"
+              style={{
+                background: 'rgba(10, 8, 25, 0.85)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              {/* Brain decoration */}
+              <div className="absolute bottom-0 left-0 text-8xl opacity-5 select-none pointer-events-none">🧠</div>
+
+              <div className="relative flex-1 flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center">
+                    <Bell className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <h3 className="text-lg font-black">تذكير مهم</h3>
+                </div>
+                <p className="text-slate-400 text-sm leading-loose flex-1">
+                  هذه النتائج هي دليل يساعدك في اتخاذ قرارات، لكن مستقبلك يصنعه قدراتك واختياراتك الواعية.
+                  استشر معلميك وذويك قبل اتخاذ قرارك النهائي.
+                </p>
+                <button
+                  onClick={() => window.print()}
+                  className="mt-6 w-full py-2.5 rounded-xl text-sm font-bold text-white border border-white/12 bg-white/5 hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  احفظ النتيجة
+                </button>
+              </div>
+            </div>
+          </motion.section>
+
+        </div>{/* end max-w-7xl */}
+      </div>{/* end relative z-10 */}
+
+      {/* ═══════════════════════════════════════════════════════════
+          MAJOR MODAL (unchanged logic)
+      ════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {selectedMajor && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setSelectedMajor(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg rounded-2xl p-8 border border-white/15 shadow-2xl"
+              style={{ background: 'rgba(10, 5, 30, 0.95)', backdropFilter: 'blur(24px)' }}
+              dir="rtl"
+            >
+              <button onClick={() => setSelectedMajor(null)}
+                className="absolute top-4 left-4 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              <h3 className="text-2xl font-bold mb-6 text-cyan-400 flex items-center gap-3">
+                <GraduationCap className="w-6 h-6" /><span>{selectedMajor}</span>
+              </h3>
+              {loadingDesc ? (
+                <div className="py-12 flex flex-col items-center gap-4">
+                  <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
+                  <p className="text-slate-400 text-sm">جاري جلب تفاصيل التخصص...</p>
+                </div>
+              ) : (
+                <div className="text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto">
+                  <p className="whitespace-pre-line text-lg">{majorDesc}</p>
+                </div>
+              )}
+              <button onClick={() => setSelectedMajor(null)} className="btn-google w-full mt-8">إغلاق</button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════════════════════════════════════════════════════
+          CHATBOT (unchanged logic)
+      ════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {isChatOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setIsChatOpen(false)}
+              className="fixed inset-0 z-[109] bg-black/40 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 100 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 100 }}
+              className="fixed bottom-4 left-4 md:bottom-8 md:left-8 z-[110] w-full max-w-md h-[420px] rounded-2xl border border-indigo-500/30 flex flex-col shadow-2xl overflow-hidden"
+              style={{ background: 'rgba(8, 5, 25, 0.97)', backdropFilter: 'blur(24px)' }}
+              dir="rtl"
+            >
+              <div className="p-4 border-b border-white/10 bg-indigo-500/10 flex justify-between items-center flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+                    <MessageSquare className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm">المستشار الأكاديمي الذكي</h4>
+                    <span className="text-[10px] text-emerald-400 flex items-center gap-1">
+                      <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />متصل الآن
+                    </span>
+                  </div>
+                </div>
+                <button onClick={() => setIsChatOpen(false)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {chatMessages.length === 0 && (
+                  <div className="text-center py-10 space-y-3">
+                    <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto text-indigo-400">
+                      <Sparkles className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <p className="text-base font-bold">أهلاً بك في طريق التوجيهي!</p>
+                      <p className="text-sm text-slate-400">اسألني أي شيء عن نتائجك أو التخصصات.</p>
+                    </div>
+                  </div>
+                )}
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${msg.role === 'user'
+                      ? 'bg-indigo-600/20 border border-indigo-500/20 rounded-tr-none'
+                      : 'bg-white/5 border border-white/10 rounded-tl-none'}`}>
+                      <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
+                    </div>
+                  </div>
+                ))}
+                {isTyping && (
+                  <div className="flex justify-end">
+                    <div className="bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none flex gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-bounce" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-bounce [animation-delay:0.4s]" />
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-white/10 bg-white/5 flex-shrink-0">
+                <div className="relative">
+                  <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)}
+                    placeholder="اسأل مستشارك عن مسارك..."
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-colors" />
+                  <button type="submit" disabled={isTyping || !chatInput.trim()}
+                    className="absolute left-2 top-1.5 p-1.5 bg-indigo-500 text-white rounded-lg hover:bg-indigo-400 disabled:opacity-50 transition-colors">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

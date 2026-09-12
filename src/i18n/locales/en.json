@@ -1,0 +1,379 @@
+{
+  "brand": "TawjihiPath",
+  "assess": {
+    "riasec": {
+      "opt1": "Strongly dislike",
+      "opt2": "Dislike",
+      "opt3": "Neutral",
+      "opt4": "Like",
+      "opt5": "Like a lot"
+    },
+    "bigfive": {
+      "opt1": "Strongly disagree",
+      "opt2": "Disagree",
+      "opt3": "Neutral",
+      "opt4": "Agree",
+      "opt5": "Strongly agree"
+    },
+    "section1Title": "Section 1: Career Interests",
+    "section1Sub": "How much do you like or want to do these activities in the future?",
+    "section2Title": "Section 2: Personality Traits",
+    "section2Sub": "Tell us honestly how much these statements apply to you",
+    "progressTitle": "Full Assessment",
+    "submitBtn": "Submit All Answers",
+    "submitting": "Submitting answers...",
+    "nextQuestion": "Next Question",
+    "prevQuestion": "Previous Question",
+    "back": "Back",
+    "currentQ": "Current Q",
+    "progress": "Progress",
+    "sections": "Sections",
+    "vocational": "Career Interests",
+    "personality": "Personality Traits",
+    "generalAverage": "General Average"
+  },
+  "nav": {
+    "howItWorks": "How It Works",
+    "features": "Features",
+    "faq": "FAQ",
+    "join": "Join Now",
+    "grades": "Grades",
+    "riasec": "Interests",
+    "personality": "Personality",
+    "results": "Results"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "badge": "The Discovery Journey",
+    "step1": {
+      "title": "Enter Your Grades",
+      "desc": "Start by sharing your academic excellence. We analyze your 10th-grade marks to understand your core strengths."
+    },
+    "step2": {
+      "title": "Discover Your Interests",
+      "desc": "Using the globally recognized RIASEC framework, we identify the career activities that spark your passion."
+    },
+    "step3": {
+      "title": "Analyze Personality",
+      "desc": "We use the Big Five factor model to understand your personality traits and how they influence your career success."
+    },
+    "step4": {
+      "title": "Get Your Roadmap",
+      "desc": "Receive a detailed AI-powered report guiding you toward the optimal academic path and future career."
+    }
+  },
+  "features": {
+    "title": "Platform Features",
+    "subtitle": "Advanced tools tailored specifically for the 2009 Generation of Jordanian Tawjihi students.",
+    "learnMore": "LEARN MORE",
+    "audienceTitle": "For the 2009 Generation",
+    "audienceDesc": "A platform dedicated to the new academic system and standards.",
+    "item1": {
+      "title": "Precision Profile",
+      "desc": "A comprehensive analysis merging psychological science with your academic track record."
+    },
+    "item2": {
+      "title": "Field Matching",
+      "desc": "Precise ranking of the 4 Tawjihi fields based on their alignment with your potential."
+    },
+    "item3": {
+      "title": "Major Directory",
+      "desc": "Explore university majors available for each field and the roadmap to get there."
+    },
+    "item4": {
+      "title": "Career Vision",
+      "desc": "Get insights into future careers and the specific skills required for each path."
+    }
+  },
+  "landing": {
+    "hero": {
+      "line1": "Your Path to Excellence",
+      "line2": "Academic Excellence",
+      "subtitle": "Embark on a comprehensive and personalized guidance journey. We accompany you step by step to identify your true interests, develop your skills, and choose the most suitable university and career path — with confidence that opens doors to global opportunities.",
+      "ctaMain": "Start Now →",
+      "ctaSecondary": "Learn More →"
+    },
+    "floatingCards": {
+      "skills": "Skills Assessment",
+      "career": "Career Guidance",
+      "future": "Your Career Future",
+      "plan": "Path Planning",
+      "preExam": "Pre-University",
+      "university": "University Selection"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "num": "01",
+        "title": "Full Assessment",
+        "desc": "Accurate measurement of your skills, interests, and academic personality"
+      },
+      "step2": {
+        "num": "02",
+        "title": "Smart Analysis",
+        "desc": "Results analyzed using AI and the latest psychological models"
+      },
+      "step3": {
+        "num": "03",
+        "title": "Custom Planning",
+        "desc": "Designing an academic and career plan that suits your abilities and ambitions"
+      },
+      "step4": {
+        "num": "04",
+        "title": "Follow-Up & Growth",
+        "desc": "We accompany you step by step to achieve your future goals"
+      }
+    },
+    "why": {
+      "title": "Why TawjihiPath?",
+      "subtitle": "Towards a clear future with confidence",
+      "withoutTitle": "Without Guidance",
+      "withTitle": "With TawjihiPath",
+      "withoutItems": {
+        "1": "Confusion in choices",
+        "2": "Inaccurate information",
+        "3": "Family and social pressure",
+        "4": "Unclear future"
+      },
+      "withItems": {
+        "1": "Clear defined path",
+        "2": "Accurate personal analysis",
+        "3": "Data-driven decisions",
+        "4": "A future you build with confidence"
+      }
+    },
+    "services": {
+      "title": "Our Services",
+      "subtitle": "Everything you need to choose your future",
+      "item1": {
+        "title": "Personality & Skills Assessment",
+        "desc": "Scientific tests to accurately measure your strengths, interests and abilities"
+      },
+      "item2": {
+        "title": "Major Recommendations",
+        "desc": "Smart recommendations for the best majors suited to you"
+      },
+      "item3": {
+        "title": "University Comparison",
+        "desc": "Comprehensive comparison between universities by major and criteria"
+      },
+      "item4": {
+        "title": "Step-by-Step Academic Path",
+        "desc": "Detailed plan from Tawjihi all the way to graduation and the job market"
+      },
+      "item5": {
+        "title": "Progress Monitoring",
+        "desc": "Track your development and regularly update your plan to achieve your goals"
+      }
+    },
+    "stats": {
+      "title1": "Accurate Results",
+      "title2": "Smart Recommendations",
+      "desc": "We rely on AI to analyze your data and provide personalized recommendations that match your true ambitions and abilities.",
+      "cta": "Try It Free",
+      "counter1": {
+        "value": "+20",
+        "label": "Precise Tests"
+      },
+      "counter2": {
+        "value": "+50",
+        "label": "Analysis Criteria"
+      },
+      "counter3": {
+        "value": "+95%",
+        "label": "Result Accuracy"
+      }
+    },
+    "testimonials": {
+      "numbersTitle": "Numbers Speak for Us",
+      "reviewsTitle": "What Our Students Say",
+      "stat1": "+15K Students",
+      "stat2": "+95% Satisfaction",
+      "stat3": "+50 Academic Partners",
+      "stat4": "+20 Governorates",
+      "t1": {
+        "name": "Ahmad",
+        "age": "18 years",
+        "text": "I was confused between multiple majors. TawjihiPath helped me discover myself and choose the right one based on my real skills and interests."
+      },
+      "t2": {
+        "name": "Layla",
+        "age": "17 years",
+        "text": "The platform helped me make decisions with confidence. I no longer felt lost about my future."
+      },
+      "t3": {
+        "name": "Mohammad",
+        "age": "19 years",
+        "text": "It saved me valuable time and information and supported my journey every step of the way."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Are the results accurate?",
+      "a1": "Yes, we use the latest AI models and global standards to analyze your data accurately and provide personalized recommendations.",
+      "q2": "Is the platform only for Tawjihi students?",
+      "a2": "It is designed primarily for Tawjihi students, but any secondary school student can benefit from it.",
+      "q3": "Do I need to create an account?",
+      "a3": "Yes, creating an account is necessary to save your results and track your progress on the platform.",
+      "q4": "How is my data privacy protected?",
+      "a4": "We comply with the highest security and privacy standards. Your data is encrypted and never shared with any third party.",
+      "q5": "Is the service free?",
+      "a5": "We provide a basic free assessment, plus paid plans offering deeper analysis and personalized consulting services.",
+      "q6": "Can I retake the test?",
+      "a6": "Yes, you can retake the assessment after a certain period to update your results based on your evolving skills and interests."
+    },
+    "cta": {
+      "title": "Start Your Journey Towards Your Future Now",
+      "subtitle": "Discover your abilities, identify your interests, and find the best option for your future with confidence.",
+      "button": "Start the Test Now →"
+    },
+    "footer": {
+      "tagline": "A smart platform to help you choose your academic and career path with confidence and clarity.",
+      "copyright": "All rights reserved © 2026 TawjihiPath",
+      "col1Title": "Legal & Support",
+      "col1Links": [
+        "Privacy Policy",
+        "Terms of Service",
+        "FAQ"
+      ],
+      "col2Title": "Our Services",
+      "col2Links": [
+        "Skills Assessment",
+        "My Dashboard"
+      ],
+      "col3Title": "Quick Links",
+      "col3Links": [
+        "Home",
+        "Fields",
+        "Majors",
+        "Privacy Policy",
+        "Terms of Service"
+      ]
+    },
+    "navbar": {
+      "explore": "Explore",
+      "dashboard": "Dashboard",
+      "start": "Start Now",
+      "admin": "Admin",
+      "langToggle": "عربي",
+      "fields": "Fields",
+      "majors": "Majors",
+      "profile": "Profile",
+      "login": "Login"
+    }
+  },
+  "explore": {
+    "fields": {
+      "badge": "Explore Academic Fields",
+      "title": "Which Field Suits You?",
+      "subtitle": "Learn about the four academic fields in the new Jordanian Tawjihi system and the opportunities each offers",
+      "mandatoryLabel": "Mandatory Subjects:",
+      "majorCount": "{{count}} Majors Available",
+      "exploreMajors": "Explore Majors",
+      "ctaTitle": "Don't know which field suits you?",
+      "ctaSubtitle": "Answer our comprehensive assessment and get a personalized recommendation based on your interests, personality, and grades",
+      "ctaBtn": "Start Assessment Now ←"
+    },
+    "majors": {
+      "badge": "University Majors Directory",
+      "title": "Explore Your Future Majors",
+      "subtitle": "Browse all university majors available in Jordan for each academic field",
+      "searchPlaceholder": "Search for a major...",
+      "filterAll": "All",
+      "resultCount": "Showing {{count}} Majors",
+      "emptyState": "No majors match your search",
+      "ctaTitle": "Discover the Best Major for You",
+      "ctaBtn": "Start Assessment Now ←"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "badge": "Privacy Policy",
+      "title": "How We Protect Your Data",
+      "updated": "Last updated: June 2026",
+      "toc": "Table of Contents",
+      "sections": {
+        "1": {
+          "title": "Information We Collect",
+          "content": "We collect information you provide directly when registering, such as name, email, grade level, and specialization. We also collect usage data automatically, such as visited pages, session duration, device type, and browser."
+        },
+        "2": {
+          "title": "How We Use Your Information",
+          "content": "We use your data to provide personalized academic path recommendations, improve your experience on the platform, and send service-related updates. We will not use your data for paid advertising or sell it to third parties."
+        },
+        "3": {
+          "title": "Data Sharing",
+          "content": "We do not sell or rent your personal data. We may share it with trusted service providers (such as Supabase for data hosting) who are committed to strict privacy policies."
+        },
+        "4": {
+          "title": "Data Retention and Deletion",
+          "content": "You can request to delete your account and data at any time through your account settings. We retain data as long as your account is active, and we may retain some logs for no more than 90 days after deletion for legal purposes."
+        },
+        "5": {
+          "title": "Cookies",
+          "content": "We use necessary session cookies for authentication and anonymous analytical cookies to understand usage patterns. You can disable them through your browser settings."
+        },
+        "6": {
+          "title": "Data Security",
+          "content": "We use SSL/TLS encryption for all communications and store passwords in a hashed format. We regularly review our security measures."
+        },
+        "7": {
+          "title": "Your Rights",
+          "content": "You have the right to access, correct, delete, and restrict the processing of your data, in accordance with applicable laws. Contact us via email for any requests."
+        },
+        "8": {
+          "title": "Contact Us",
+          "content": "For any privacy-related inquiries:"
+        }
+      }
+    },
+    "terms": {
+      "badge": "Terms of Service",
+      "title": "Platform Terms & Conditions",
+      "updated": "Last updated: June 2026",
+      "toc": "Table of Contents",
+      "sections": {
+        "1": {
+          "title": "Acceptance of Terms",
+          "content": "By using the TawjihiPath platform, you agree to comply with these terms. If you are under 18, please obtain parental consent."
+        },
+        "2": {
+          "title": "Description of Service",
+          "content": "The platform provides academic and career guidance tools for Tawjihi students, including: skills assessment, field and major exploration, and path recommendations. The service is for guidance purposes only and is not a substitute for formal academic advising."
+        },
+        "3": {
+          "title": "Account Creation",
+          "content": "You must provide accurate information when registering. You are responsible for maintaining the confidentiality of your login credentials. Creating multiple accounts for a single person is prohibited."
+        },
+        "4": {
+          "title": "Acceptable Use",
+          "content": "It is prohibited to use the platform for illegal purposes, attempt to breach systems, violate intellectual property rights, or share misleading or harmful content."
+        },
+        "5": {
+          "title": "Intellectual Property",
+          "content": "All content, designs, and algorithms on the platform are the exclusive property of TawjihiPath. Copying or distributing them without prior written permission is prohibited."
+        },
+        "6": {
+          "title": "Disclaimer",
+          "content": "The recommendations provided are purely advisory. The platform is not responsible for academic or career decisions based on assessment results. Results are based on data entered by the user."
+        },
+        "7": {
+          "title": "Amendments to Terms",
+          "content": "We reserve the right to amend these terms at any time. We will notify you of any material changes via email or in-app notice 7 days before implementation."
+        },
+        "8": {
+          "title": "Termination of Service",
+          "content": "We reserve the right to suspend or terminate your account in the event of a breach of these terms. You can delete your account at any time from your profile settings."
+        },
+        "9": {
+          "title": "Governing Law",
+          "content": "These terms are governed by the laws in force in the Hashemite Kingdom of Jordan."
+        },
+        "10": {
+          "title": "Contact Us",
+          "content": "For any inquiries:"
+        }
+      }
+    }
+  }
+}
